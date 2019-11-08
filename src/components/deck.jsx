@@ -1,18 +1,24 @@
 import React, {Component} from 'react';
+import CardDraw from './cardDraw';
 
 class Deck extends Component{
     state = {
         deck_id: null,
-        cardsLeft: null
     }
     
     async componentDidMount(){
         const response = await fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
-        console.log(response.json());
-
+        const deckStart = await response.json();
+        this.setState({
+            deck_id: deckStart.deck_id
+        })
     }
     render(){
-        return(<p> hi there </p>);
+        return(
+            <div>
+                {this.state.deck_id ? <CardDraw deck_id={this.state.deck_id}/> : ""}
+            </div>
+        );
     }
 }
 
