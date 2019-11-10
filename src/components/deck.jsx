@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import CardDraw from './cardDraw';
+import Blackjack from './cardDraw';
 
 class Deck extends Component{
     state = {
@@ -16,7 +16,7 @@ class Deck extends Component{
     render(){
         return(
             <div>
-                {this.state.deck_id ? <CardDraw deck_id={this.state.deck_id}/> : ""}
+                {this.state.deck_id ? <Blackjack deck_id={this.state.deck_id}/> : ""}
             </div>
         );
     }
