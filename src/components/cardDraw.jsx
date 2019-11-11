@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import cardback from '../images/cardback.png'
+import cardback from '../images/cardback.png';
+import handValue from '../utils/cardLogic';
 
 class Blackjack extends Component{
     state = {
@@ -7,8 +8,8 @@ class Blackjack extends Component{
         cardsLeft: 52,
         playerCards: null,
         playerImages: null,
-        dealerCards: null,
-        dealerImages: null
+        dealerHand: null,
+        dealerHandImages: null
     }
     componentDidMount(){
         this.setState({
@@ -18,36 +19,58 @@ class Blackjack extends Component{
     gameStart=async()=>{
         const cardData = await fetch(`https://deckofcardsapi.com/api/deck/${this.state.deck_id}/draw/?count=4`);
         const cards = await cardData.json();
-        console.log(cards);
         this.setState({
             playerCards:[cards.cards[0].value, cards.cards[1].value],
             playerImages:[cards.cards[0].image, cards.cards[1].image],
-            dealerCards:[cards.cards[2].value, cards.cards[3].value],
-            dealerImages:[cards.cards[2].image,cards.cards[3].image],
+            dealerHand:[cards.cards[2].value, cards.cards[3].value],
+            dealerHandImages:[cards.cards[2].image, cards.cards[3].image],
             cardsLeft:cards.remaining
         })
     }
-    drawNewCard=async()=>{
+    hit=async()=>{
         const cardData = await fetch(`https://deckofcardsapi.com/api/deck/${this.state.deck_id}/draw/?count=1`);
         const card = await cardData.json();
-        console.log(card.cards[0]);
-        this.setState({
-            cardsLeft: card.remaining,
-            cardImage: card.cards[0].image,
-            cardValue: card.cards[0].value,
-            cardSuit: card.cards[0].suit
-        }) 
+        this.setState(state=>{
+            const playerCards = state.playerCards.concat(card.cards[0].value);
+            const playerImages = state.playerImages.concat(card.cards[0].image)
+            return{
+                playerCards,
+                playerImages,
+                cardsLeft:card.remaining
+            }
+        })
+    }
+    dealerHit=async()=>{
+        const cardData = await fetch(`https://deckofcardsapi.com/api/deck/${this.state.deck_id}/draw/?count=1`);
+        const card = await cardData.json();
+        this.setState(state=>{
+            const dealerHand = state.dealerHand.concat(card.cards[0].value);
+            const dealerHandImages = state.dealerHandImages.concat(card.cards[0].image)
+            return{
+                dealerHand,
+                dealerHandImages,
+                cardsLeft:card.remaining
+            }
+        })
+    }
+    stay=async()=>{
+
     }
     render(){
-        console.log(this.state)
+        console.log(this.state);
         return(
             <div>
                 <p> cards remaining: {this.state.cardsLeft} </p>
                 {this.state.playerCards ? <>
                     <p>your cards:</p> 
-                    <img src={this.state.playerImages[0]} alt="card display failed"/><img src={this.state.playerImages[1]} alt="card display failed"/>
+                    {this.state.playerImages.map(image=>{return <img src={image} alt="card display failed"/>})}
+                    <p>total value: {handValue(this.state.playerCards)}</p>
                     <p>dealer cards:</p>
-                    <img src={cardback} alt="card display failed"/><img src={this.state.dealerImages[1]} alt="card display failed"/>
+                    <img src={cardback} alt="card display failed"/>
+                    {this.state.dealerHandImages.slice(1,this.state.dealerHandImages.length).map(image=>{return <img src={image} alt="card display failed"/>})}
+                    <p></p>
+                    <button onClick={this.hit}> hit me </button>
+                    <button onClick={this.stay}> stay </button>
                     </>: <button onClick={this.gameStart}> start a new game </button>}
             </div>
         );
