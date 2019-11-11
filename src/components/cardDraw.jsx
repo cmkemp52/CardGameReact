@@ -54,15 +54,12 @@ class Blackjack extends Component{
                 cardsLeft:card.remaining
             }
         })
-        console.log(this.state)
         return(card.cards[0].value);
     }
     stay=async()=>{
         let tempDealerHand = this.state.dealerHand;
-        console.log(tempDealerHand);
         while(handValue(tempDealerHand)<16){
             tempDealerHand.push(await this.dealerHit());
-            console.log(tempDealerHand);
         }
         if(handValue(tempDealerHand)>21){
             this.setState({

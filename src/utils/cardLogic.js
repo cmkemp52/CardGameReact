@@ -1,5 +1,11 @@
+
 function handValue(cards){
     let totalValue=0;
+    //takes ace and puts it at end of array - ensures ace is properly counted as 1 or 11
+    if(cards.includes("ACE")){
+        cards.push(cards.splice(cards.indexOf("ACE"), 1)[0])
+    }
+    //adds value of each card to total value
     for(let card in cards){
         switch(cards[card]){
             case "KING":
